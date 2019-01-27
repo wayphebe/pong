@@ -7,7 +7,32 @@
     <script>
         var canvas;
         var canvasContext;
-        var ballX = 1;
+        var ballX = 50;
+        var ballY = 50;
+        var ballSpeedX = 5;
+        var ballSpeedY = 1;
+
+        // paddle y variables
+        var paddleY = 250 ; 
+        var paddle2Y = 250;
+        const PADDLE_THICKNESS = 10;
+        const PADDLE_HEIGHT = 100;
+
+        // score
+        var player_1 = 0;
+        var player_2 = 0;
+        
+
+        function calculateMousePos(evt){
+            var rect = canvas.getBoundingClientRect();
+            var root = document.documentElement;
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop;
+            return {
+                x: mouseX,
+                y: mouseY
+            };
+        };
 
 
         window.onload = function(){
@@ -19,30 +44,105 @@
                 move();
                 draw();
             },1000/framePerSecond);
-            callBoth();
-            
-        }
+            callBoth(); 
+
+            canvas.addEventListener('mousemove',
+                function(evt){
+                    var mousePos = calculateMousePos(evt);
+                    paddleY = mousePos.y - (PADDLE_HEIGHT/2);
+                });
+
+        };
+
         function callBoth(){
             move();
             draw();        
-            }
+        };
 
         function draw(){
-          
-            canvasContext.fillStyle = "black";
-            canvasContext.fillRect(0,0, canvas.width, canvas.height);
-            canvasContext.fillStyle = "#ffffff";
-            canvasContext.fillRect(ballX,ballX, ballX,ballX);
-            canvasContext.fillStyle = "#ffffff";
-            canvasContext.fillRect(10,200, 10,60);
+            color(0,0, canvas.width, canvas.height,"black");
+            // LEFT PADDLE
+            color(0,paddleY,PADDLE_THICKNESS,PADDLE_HEIGHT,"#ffffff");
+            // RIGHT PADDLE
+            color(canvas.width-PADDLE_THICKNESS,paddle2Y,PADDLE_THICKNESS,PADDLE_HEIGHT,"#ffffff");
+            
            
-        }
+            colorCircle(ballX,ballY,10,"#ffffff");
 
+            canvasContext.fillText (player_1, 100, 100);
+            canvasContext.fillText (player_2, canvas.width - 100, 100);
+       };
+
+        function color(leftX,topY,width,height,drawColor){
+                canvasContext.fillStyle = drawColor;
+                canvasContext.fillRect(leftX,topY,width,height);
+        };
+
+        function colorCircle(centerX,centerY,radius,drawColor){
+            canvasContext.fillStyle =drawColor;
+            canvasContext.beginPath();
+            canvasContext.arc(centerX, centerY,radius, 0, Math.PI*2, true);
+            canvasContext.fill();
+        };
+        
+
+        function computerMovement(){
+            var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+            if (paddle2YCenter < ballY - 35){
+                paddle2Y += 3;
+            } else if(paddle2YCenter < ballY+35)
+               { paddle2Y -= 3;
+            }
+        };
         function move(){
+            computerMovement();
 
-            ballX = ballX + 0.005;
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+           
+            if (ballX> canvas.width){
+                if (ballX > paddle2Y &&
+                ballX < paddle2Y + PADDLE_HEIGHT){
+                    ballSpeedX = -ballSpeedX;
+                } else{
+                    ballReset();
+                    player_1 ++;
+                }
+               
+                
+            };
+            if (ballX<0){
+                if (ballY > paddleY &&
+                    ballY<paddleY + PADDLE_HEIGHT){
+                        ballSpeedX = - ballSpeedX;
+                    }else{
+                        ballReset();
+                        player_2 ++;
+                    }
+                
+              
+            };
+            ballY = ballY + ballSpeedY;
+           
+            if (ballY> canvas.height){
+                ballSpeedY = -ballSpeedY;
+               
+            };
+            if (ballY<0){
+                ballSpeedY = -ballSpeedY;
+               
+            };
 
+           
+        };
+
+        function ballReset(){
+            ballSpeedX = -ballSpeedX;
+            ballX = canvas.width/2;
+            ballY = canvas.height/2; 
         }
+    
+
         </script>
         </body>
     </html>
