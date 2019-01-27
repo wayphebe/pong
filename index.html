@@ -1,0 +1,48 @@
+<html>
+    <body>
+    text
+    <canvas id = "gameCanvas" width="800" height="600">
+        </canvas> 
+
+    <script>
+        var canvas;
+        var canvasContext;
+        var ballX = 1;
+
+
+        window.onload = function(){
+            
+            canvas = document.getElementById('gameCanvas')
+            canvasContext = canvas.getContext('2d');
+            var framePerSecond = 30;
+            setInterval(function(){
+                move();
+                draw();
+            },1000/framePerSecond);
+            callBoth();
+            
+        }
+        function callBoth(){
+            move();
+            draw();        
+            }
+
+        function draw(){
+          
+            canvasContext.fillStyle = "black";
+            canvasContext.fillRect(0,0, canvas.width, canvas.height);
+            canvasContext.fillStyle = "#ffffff";
+            canvasContext.fillRect(ballX,ballX, ballX,ballX);
+            canvasContext.fillStyle = "#ffffff";
+            canvasContext.fillRect(10,200, 10,60);
+           
+        }
+
+        function move(){
+
+            ballX = ballX + 0.005;
+
+        }
+        </script>
+        </body>
+    </html>
